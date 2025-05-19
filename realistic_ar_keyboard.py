@@ -3,16 +3,16 @@ import numpy as np
 import mediapipe as mp
 import time
 
-# ArUco marker setup
+#ArUco marker setup
 aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
 parameters = cv2.aruco.DetectorParameters()
 detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
 
-# MediaPipe hand tracker
+#MediaPipe hand tracker
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(max_num_hands=1)
 
-# Keyboard layout (label, width)
+#Keyboard layout (label, width)
 keyboard_layout = [
     [("1",1),("2",1),("3",1),("4",1),("5",1),("6",1),("7",1),("8",1),("9",1),("0",1),("-",1),("=",1),("Backspace",5)],
     [("Tab",1.5),("Q",1),("W",1),("E",1),("R",1),("T",1),("Y",1),("U",1),("I",1),("O",1),("P",1),("[",1),("]",1),("\\",1.5)],
@@ -54,10 +54,10 @@ while True:
         continue
 
     dst_pts = np.array([
-        marker_map[0],  # top-left
-        marker_map[1],  # top-right
-        marker_map[2],  # bottom-right
-        marker_map[3]   # bottom-left
+        marker_map[0],  #top-left
+        marker_map[1],  #top-right
+        marker_map[2],  #bottom-right
+        marker_map[3]   #bottom-left
     ], dtype=np.float32)
 
     aruco_width = np.linalg.norm(marker_map[1] - marker_map[0])
@@ -83,9 +83,7 @@ while True:
 
     H = cv2.getPerspectiveTransform(src_pts, dst_pts)
 
-    H = cv2.getPerspectiveTransform(src_pts, dst_pts)
-
-# Skip bad homographies (all values must be finite)
+#Skip bad homographies (all values must be finite)
     if not np.isfinite(H).all():
         visible = ''.join(c for c in text_output[-40:] if c.isprintable())
         cv2.putText(frame_out, visible, (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
@@ -93,7 +91,6 @@ while True:
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         continue
-
 
     key_boxes = []
     for r, row in enumerate(keyboard_layout):
@@ -110,7 +107,6 @@ while True:
             bbox_w = int(np.linalg.norm(projected[1] - projected[0]))
             bbox_h = int(np.linalg.norm(projected[0] - projected[3]))
 
-            # Clamp to reasonable ranges to prevent glitches
             bbox_w = max(10, min(bbox_w, 300))
             bbox_h = max(10, min(bbox_h, 120))
 
